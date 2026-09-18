@@ -307,6 +307,9 @@ async function refresh() {
   S = decode(info.data);
   pot = await conn.getBalance(vaultPda);
   try {
+    // the coin may be classic SPL or Token-2022 — ask the mint which
+    const mi0 = await conn.getAccountInfo(S.mint);
+    TOKPROG = mi0 && mi0.owner.equals(TOKEN_2022_PROGRAM_ID) ? TOKEN_2022_PROGRAM_ID : TOKEN_PROGRAM_ID;
     const s = await conn.getTokenSupply(S.mint);
     supply = BigInt(s.value.amount); dec = s.value.decimals;
     const mi = await conn.getParsedAccountInfo(S.mint);
