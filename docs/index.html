@@ -267,6 +267,7 @@ async function send(ixs, label) {
 }
 
 async function take() {
+ try {
   const ata = await getAssociatedTokenAddress(S.mint, wallet, false, TOKPROG);
   const pre = [];
   if (!(await conn.getAccountInfo(ata))) pre.push(createAssociatedTokenAccountInstruction(wallet, ata, wallet, S.mint, TOKPROG));
@@ -284,6 +285,7 @@ async function take() {
     data: cat(disc("take_throne"), u64le(max)),
   }));
   await send(pre, "Taking the Throne");
+ } catch (e) { msg("take failed: " + String((e && e.message) || e).slice(0,170), "err"); console.error(e); }
 }
 
 async function settle() {
