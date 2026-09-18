@@ -1,0 +1,19 @@
+[toolchain]
+anchor_version = "0.31.1"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+throne = "7LR3p18849attzWGVfD8QT4cd7LUGRMmiR4jwfZ5Ma62"
+
+[programs.devnet]
+throne = "7LR3p18849attzWGVfD8QT4cd7LUGRMmiR4jwfZ5Ma62"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "npx mocha -t 1000000 tests/**/*.ts"

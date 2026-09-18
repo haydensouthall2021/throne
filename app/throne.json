@@ -1,0 +1,878 @@
+{
+  "address": "7LR3p18849attzWGVfD8QT4cd7LUGRMmiR4jwfZ5Ma62",
+  "metadata": {
+    "name": "throne",
+    "version": "0.1.0",
+    "spec": "0.1.0"
+  },
+  "docs": [
+    "The Throne.",
+    "",
+    "A clock runs down. Whoever holds the Throne when it reaches zero takes the",
+    "whole pot. Anyone can take the Throne by burning tokens, which buys them a",
+    "short immunity and pushes the clock back.",
+    "",
+    "Worth understanding before reading further:",
+    "",
+    "1. **Nobody holds the pot.** It sits at a PDA, an address derived from the",
+    "program itself, for which no private key exists. The only instruction",
+    "that moves SOL out is `settle`, and it can only pay the round's winner.",
+    "",
+    "2. **`settle` is permissionless.** Anyone can call it once the clock is up,",
+    "and it always pays the holder rather than the caller. There is no way for",
+    "the payout to be withheld — if the winner will not call it, a rival who",
+    "wants the next round to start will.",
+    "",
+    "3. **The cost to take is a token ratchet, not a price feed.** A program",
+    "cannot see what the token is worth in SOL without trusting an oracle, and",
+    "an oracle can be manipulated for a block and drained. So the cost rises a",
+    "fixed step with each take and resets to the floor each round."
+  ],
+  "instructions": [
+    {
+      "name": "deposit_fees",
+      "docs": [
+        "Push SOL into the pot. Permissionless — the fee wallet, a keeper, or a",
+        "stranger. None of them can take it back out."
+      ],
+      "discriminator": [
+        13,
+        215,
+        175,
+        72,
+        53,
+        21,
+        89,
+        5
+      ],
+      "accounts": [
+        {
+          "name": "throne",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  104,
+                  114,
+                  111,
+                  110,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury",
+          "writable": true,
+          "relations": [
+            "throne"
+          ]
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize",
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "throne",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  104,
+                  114,
+                  111,
+                  110,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "treasury"
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "round_seconds",
+          "type": "i64"
+        },
+        {
+          "name": "add_seconds",
+          "type": "i64"
+        },
+        {
+          "name": "lock_seconds",
+          "type": "i64"
+        },
+        {
+          "name": "floor_tokens",
+          "type": "u64"
+        },
+        {
+          "name": "step_bps",
+          "type": "u16"
+        },
+        {
+          "name": "cut_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "set_authority",
+      "docs": [
+        "Hand over the authority, or set it to the system program to give it up."
+      ],
+      "discriminator": [
+        133,
+        250,
+        37,
+        21,
+        110,
+        163,
+        26,
+        121
+      ],
+      "accounts": [
+        {
+          "name": "throne",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  104,
+                  114,
+                  111,
+                  110,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "throne"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "new_authority",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "set_paused",
+      "docs": [
+        "Stops deposits and takes. Deliberately cannot stop `settle`, so a lost or",
+        "hostile authority key can never trap a round's pot."
+      ],
+      "discriminator": [
+        91,
+        60,
+        125,
+        192,
+        176,
+        225,
+        166,
+        218
+      ],
+      "accounts": [
+        {
+          "name": "throne",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  104,
+                  114,
+                  111,
+                  110,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "throne"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "paused",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "settle",
+      "docs": [
+        "Pay the round out and start the next one.",
+        "",
+        "Anyone may call this. It always pays the holder, never the caller, so",
+        "there is nothing to gain by racing for it — only a new round to start."
+      ],
+      "discriminator": [
+        175,
+        42,
+        185,
+        87,
+        144,
+        131,
+        102,
+        212
+      ],
+      "accounts": [
+        {
+          "name": "throne",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  104,
+                  114,
+                  111,
+                  110,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "winner",
+          "docs": [
+            "For an unplayed round, pass any writable account — it receives nothing."
+          ],
+          "writable": true
+        },
+        {
+          "name": "cranker",
+          "docs": [
+            "anyone at all may trigger the payout"
+          ],
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "take_throne",
+      "docs": [
+        "Burn tokens, take the seat, push the clock back.",
+        "",
+        "Refuses once the clock has run out — at that point the round is over and",
+        "somebody must call `settle` before a new one can start. Without this, a",
+        "late transaction could steal a round that was already won."
+      ],
+      "discriminator": [
+        75,
+        32,
+        96,
+        210,
+        213,
+        32,
+        53,
+        223
+      ],
+      "accounts": [
+        {
+          "name": "throne",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  104,
+                  114,
+                  111,
+                  110,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "relations": [
+            "throne"
+          ]
+        },
+        {
+          "name": "taker_tokens",
+          "writable": true
+        },
+        {
+          "name": "taker",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "max_cost",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Throne",
+      "discriminator": [
+        80,
+        147,
+        16,
+        40,
+        228,
+        239,
+        120,
+        246
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AuthorityChanged",
+      "discriminator": [
+        31,
+        19,
+        174,
+        152,
+        4,
+        82,
+        215,
+        226
+      ]
+    },
+    {
+      "name": "FeesIn",
+      "discriminator": [
+        225,
+        47,
+        237,
+        191,
+        28,
+        12,
+        28,
+        136
+      ]
+    },
+    {
+      "name": "Founded",
+      "discriminator": [
+        119,
+        187,
+        91,
+        214,
+        38,
+        21,
+        239,
+        237
+      ]
+    },
+    {
+      "name": "PauseSet",
+      "discriminator": [
+        175,
+        57,
+        198,
+        136,
+        192,
+        66,
+        204,
+        73
+      ]
+    },
+    {
+      "name": "Settled",
+      "discriminator": [
+        232,
+        210,
+        40,
+        17,
+        142,
+        124,
+        145,
+        238
+      ]
+    },
+    {
+      "name": "Taken",
+      "discriminator": [
+        201,
+        248,
+        248,
+        128,
+        170,
+        80,
+        234,
+        249
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "BadRound",
+      "msg": "Round must be between 1 minute and 24 hours"
+    },
+    {
+      "code": 6001,
+      "name": "BadAdd",
+      "msg": "Time added per take must be 0 to 600 seconds"
+    },
+    {
+      "code": 6002,
+      "name": "BadLock",
+      "msg": "Immunity must be 0 to 300 seconds"
+    },
+    {
+      "code": 6003,
+      "name": "LockTooLong",
+      "msg": "Immunity cannot exceed a quarter of the round"
+    },
+    {
+      "code": 6004,
+      "name": "BadStep",
+      "msg": "Step must be between 1.0x and 3.0x"
+    },
+    {
+      "code": 6005,
+      "name": "BadCut",
+      "msg": "Creator cut cannot exceed 20%"
+    },
+    {
+      "code": 6006,
+      "name": "BadFloor",
+      "msg": "Floor must be above zero"
+    },
+    {
+      "code": 6007,
+      "name": "ZeroAmount",
+      "msg": "Amount must be above zero"
+    },
+    {
+      "code": 6008,
+      "name": "Paused",
+      "msg": "The Throne is paused"
+    },
+    {
+      "code": 6009,
+      "name": "RoundOver",
+      "msg": "This round is over. Settle it before taking the Throne again"
+    },
+    {
+      "code": 6010,
+      "name": "Immune",
+      "msg": "The holder is still immune"
+    },
+    {
+      "code": 6011,
+      "name": "AlreadyYours",
+      "msg": "You already hold the Throne"
+    },
+    {
+      "code": 6012,
+      "name": "CostMovedAgainstYou",
+      "msg": "Cost rose above your limit before your transaction landed"
+    },
+    {
+      "code": 6013,
+      "name": "RoundRunning",
+      "msg": "The round is still running"
+    },
+    {
+      "code": 6014,
+      "name": "WrongWinner",
+      "msg": "That account is not the winner of this round"
+    },
+    {
+      "code": 6015,
+      "name": "WrongMint",
+      "msg": "That token account is for a different mint"
+    },
+    {
+      "code": 6016,
+      "name": "NotYourTokens",
+      "msg": "That token account is not yours"
+    },
+    {
+      "code": 6017,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow"
+    }
+  ],
+  "types": [
+    {
+      "name": "AuthorityChanged",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "new_authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeesIn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "cut",
+            "type": "u64"
+          },
+          {
+            "name": "pot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Founded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "round_seconds",
+            "type": "i64"
+          },
+          {
+            "name": "ends_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PauseSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "paused",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Settled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "winner",
+            "type": "pubkey"
+          },
+          {
+            "name": "payout",
+            "type": "u64"
+          },
+          {
+            "name": "next_round_ends",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Taken",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "taker",
+            "type": "pubkey"
+          },
+          {
+            "name": "previous",
+            "type": "pubkey"
+          },
+          {
+            "name": "burned",
+            "type": "u64"
+          },
+          {
+            "name": "next_cost",
+            "type": "u64"
+          },
+          {
+            "name": "ends_at",
+            "type": "i64"
+          },
+          {
+            "name": "locked_until",
+            "type": "i64"
+          },
+          {
+            "name": "pot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Throne",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "holder",
+            "type": "pubkey"
+          },
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "round_seconds",
+            "type": "i64"
+          },
+          {
+            "name": "add_seconds",
+            "type": "i64"
+          },
+          {
+            "name": "lock_seconds",
+            "type": "i64"
+          },
+          {
+            "name": "ends_at",
+            "type": "i64"
+          },
+          {
+            "name": "max_end",
+            "type": "i64"
+          },
+          {
+            "name": "locked_until",
+            "type": "i64"
+          },
+          {
+            "name": "floor_tokens",
+            "type": "u64"
+          },
+          {
+            "name": "cost_tokens",
+            "type": "u64"
+          },
+          {
+            "name": "step_bps",
+            "type": "u16"
+          },
+          {
+            "name": "cut_bps",
+            "type": "u16"
+          },
+          {
+            "name": "takes_this_round",
+            "type": "u32"
+          },
+          {
+            "name": "total_burned",
+            "type": "u64"
+          },
+          {
+            "name": "total_paid_out",
+            "type": "u64"
+          },
+          {
+            "name": "rounds_settled",
+            "type": "u64"
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}

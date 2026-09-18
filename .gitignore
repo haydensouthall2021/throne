@@ -1,0 +1,21 @@
+target/
+node_modules/
+.anchor/
+dist/
+build/
+
+# never commit keys
+*.json.key
+fee-wallet.json
+id.json
+keypair.json
+**/*-keypair.json
+.env
+.env.*
+
+# your own deployment addresses — fine to publish, but publish deliberately
+launch.json
+app/config.json
+
+.DS_Store
+*.log
