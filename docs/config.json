@@ -1,6 +1,6 @@
 {
-  "rpc": "https://api.mainnet-beta.solana.com",
+  "rpc": "https://mainnet.helius-rpc.com/?api-key=2c9f3598-919f-4488-9ec8-634a4efaa5e4",
   "cluster": "mainnet",
-  "programId": "7LR3p18849attzWGVfD8QT4cd7LUGRMmiR4jwfZ5Ma62",
+  "programId": "6AqWpXAFSEN73NZQFzcAo7mZjCgNEy7fkULwDMSPwddq",
   "buyUrl": ""
 }

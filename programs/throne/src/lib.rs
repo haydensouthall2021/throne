@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_lang::system_program;
 use anchor_spl::token::{self, Burn, Mint, Token, TokenAccount};
 
-declare_id!("7LR3p18849attzWGVfD8QT4cd7LUGRMmiR4jwfZ5Ma62");
+declare_id!("6AqWpXAFSEN73NZQFzcAo7mZjCgNEy7fkULwDMSPwddq");
 
 /// The Throne.
 ///

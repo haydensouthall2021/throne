@@ -1,5 +1,5 @@
 {
-  "address": "7LR3p18849attzWGVfD8QT4cd7LUGRMmiR4jwfZ5Ma62",
+  "address": "6AqWpXAFSEN73NZQFzcAo7mZjCgNEy7fkULwDMSPwddq",
   "metadata": {
     "name": "throne",
     "version": "0.1.0",
@@ -188,6 +188,10 @@
         {
           "name": "floor_tokens",
           "type": "u64"
+        },
+        {
+          "name": "floor_bps",
+          "type": "u16"
         },
         {
           "name": "step_bps",
@@ -870,6 +874,14 @@
           {
             "name": "vault_bump",
             "type": "u8"
+          },
+          {
+            "name": "floor_bps",
+            "docs": [
+              "The real floor is this share of the CURRENT supply, so as tokens burn the",
+              "cost to take the seat falls with them and the game stays playable."
+            ],
+            "type": "u16"
           }
         ]
       }

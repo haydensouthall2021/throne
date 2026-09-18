@@ -6,10 +6,10 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-throne = "7LR3p18849attzWGVfD8QT4cd7LUGRMmiR4jwfZ5Ma62"
+throne = "6AqWpXAFSEN73NZQFzcAo7mZjCgNEy7fkULwDMSPwddq"
 
 [programs.devnet]
-throne = "7LR3p18849attzWGVfD8QT4cd7LUGRMmiR4jwfZ5Ma62"
+throne = "6AqWpXAFSEN73NZQFzcAo7mZjCgNEy7fkULwDMSPwddq"
 
 [provider]
 cluster = "localnet"
