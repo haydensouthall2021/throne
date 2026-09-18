@@ -210,6 +210,7 @@ function decode(buf) {
 }
 
 let wallet = null, S = null, pot = 0, myTok = 0n, dec = 6, supply = 0n, mintAuth = null;
+let cost = 0n;
 let TOKPROG = TOKEN_PROGRAM_ID;   // set from the mint owner — the coin may be Token-2022
 let feed = [], lastRound = null;
 const $ = id => document.getElementById(id);
@@ -268,10 +269,13 @@ async function send(ixs, label) {
 
 async function take() {
  try {
+  // work the price out here rather than trusting a shared variable
+  const dyn = supply > 0n ? (supply * BigInt(S.floorBps)) / 10000n : 0n;
+  const price = S.costTokens > dyn ? S.costTokens : dyn;
   const ata = await getAssociatedTokenAddress(S.mint, wallet, false, TOKPROG);
   const pre = [];
   if (!(await conn.getAccountInfo(ata))) pre.push(createAssociatedTokenAccountInstruction(wallet, ata, wallet, S.mint, TOKPROG));
-  const max = cost * 12n / 10n;
+  const max = price * 12n / 10n;
   pre.push(new TransactionInstruction({
     programId: PROGRAM_ID,
     keys: [
