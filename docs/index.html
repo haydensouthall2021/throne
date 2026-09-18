@@ -38,6 +38,7 @@ header{border-bottom:1px solid var(--line);background:var(--card);position:stick
 .throne.mine{border-color:var(--gold)}
 .throne.hot{border-color:var(--down)}
 .throne.hot::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,84,54,.12),transparent 60%);pointer-events:none}
+.camint{font-size:12px;color:var(--gold);word-break:break-all;cursor:pointer;margin:4px 0 14px}
 .kick{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);font-weight:800}
 .who{font-size:20px;font-weight:900;margin:5px 0 2px;letter-spacing:-.02em;word-break:break-all}
 .who.me{color:var(--gold)}
@@ -110,7 +111,7 @@ header{border-bottom:1px solid var(--line);background:var(--card);position:stick
 
   <div id="app" style="display:none">
     <div class="throne" id="throne">
-      <div class="kick">On the throne</div>
+      <div class="kick">Contract</div><div id="ca" class="camint" title="click to copy">—</div><div class="kick">On the throne</div>
       <div class="who" id="who">—</div>
       <div class="sub" id="sub"></div>
       <div class="pot" id="pot">—</div>
@@ -345,6 +346,8 @@ function render() {
   $("throne").className = "throne" + (isMine ? " mine" : "") + (hot || over ? " hot" : "");
   $("who").textContent = empty ? "Nobody yet" : (isMine ? "YOU" : sa(S.holder.toBase58()));
   $("who").className = "who" + (isMine ? " me" : "");
+  $("ca").textContent = S.mint.toBase58();
+  $("ca").onclick = () => { navigator.clipboard && navigator.clipboard.writeText(S.mint.toBase58()); msg("Contract address copied.", "ok"); };
   $("sub").textContent = `round ${S.round} · ${S.takesThisRound} takes this round`;
   $("pot").textContent = sol(pot) + " SOL";
   $("potsub").textContent = isMine ? "yours if the clock runs out with you on the seat"
@@ -376,9 +379,9 @@ function render() {
       : immune ? `Immune for ${Math.ceil(S.lockedUntil - now)}s`
       : myTok < S.costTokens ? `Need ${tk(S.costTokens)} tokens`
       : `Take it — burn ${tk(S.costTokens)}`, take, !can);
-    if (CFG.buyUrl) {
+    if (true) {
       const a = document.createElement("a");
-      a.href = CFG.buyUrl; a.target = "_blank"; a.rel = "noopener";
+      a.href = CFG.buyUrl || ("https://jup.ag/swap/SOL-" + S.mint.toBase58()); a.target = "_blank"; a.rel = "noopener";
       a.innerHTML = '<button class="big">Buy tokens</button>';
       acts.appendChild(a);
     }
