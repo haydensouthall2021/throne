@@ -20,7 +20,7 @@
 import pkg from "@coral-xyz/anchor";
 const { AnchorProvider, BN, workspace, setProvider } = pkg;
 import { PublicKey, LAMPORTS_PER_SOL, SystemProgram } from "@solana/web3.js";
-import { getMint } from "@solana/spl-token";
+import { getMint, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import fs from "fs";
 
 // ─────────── settings ───────────
@@ -51,7 +51,10 @@ async function main() {
   console.log("mint     :", mint.toBase58());
 
   // sanity-check the coin before tying the Throne to it permanently
-  const info = await getMint(conn, mint);
+  const acct = await conn.getAccountInfo(mint);
+  const TOKEN_PROG = acct && acct.owner.equals(TOKEN_2022_PROGRAM_ID) ? TOKEN_2022_PROGRAM_ID : TOKEN_PROGRAM_ID;
+  console.log("  token program  ", TOKEN_PROG.equals(TOKEN_2022_PROGRAM_ID) ? "Token-2022" : "classic SPL");
+  const info = await getMint(conn, mint, undefined, TOKEN_PROG);
   const supply = Number(info.supply) / 10 ** info.decimals;
   console.log("\nthe coin:");
   console.log("  supply         ", supply.toLocaleString());

@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
-use anchor_spl::token::{self, Burn, Mint, Token, TokenAccount};
+use anchor_spl::token_interface::{self as token, Burn, Mint, TokenAccount, TokenInterface};
 
 declare_id!("6AqWpXAFSEN73NZQFzcAo7mZjCgNEy7fkULwDMSPwddq");
 
@@ -309,7 +309,7 @@ pub struct Initialize<'info> {
     /// CHECK: lamport-only PDA; the pot. No private key exists for it.
     #[account(seeds = [b"vault"], bump)]
     pub vault: UncheckedAccount<'info>,
-    pub mint: Account<'info, Mint>,
+    pub mint: InterfaceAccount<'info, Mint>,
     /// CHECK: receives the creator cut; only ever receives lamports
     pub treasury: UncheckedAccount<'info>,
     #[account(mut)]
@@ -340,14 +340,14 @@ pub struct TakeThrone<'info> {
     #[account(seeds = [b"vault"], bump = throne.vault_bump)]
     pub vault: UncheckedAccount<'info>,
     #[account(mut)]
-    pub mint: Account<'info, Mint>,
+    pub mint: InterfaceAccount<'info, Mint>,
     #[account(mut,
         constraint = taker_tokens.mint == mint.key() @ ThroneError::WrongMint,
         constraint = taker_tokens.owner == taker.key() @ ThroneError::NotYourTokens)]
-    pub taker_tokens: Account<'info, TokenAccount>,
+    pub taker_tokens: InterfaceAccount<'info, TokenAccount>,
     #[account(mut)]
     pub taker: Signer<'info>,
-    pub token_program: Program<'info, Token>,
+    pub token_program: Interface<'info, TokenInterface>,
 }
 
 #[derive(Accounts)]

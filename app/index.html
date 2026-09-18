@@ -173,7 +173,7 @@ import {
   Connection, PublicKey, SystemProgram, Transaction, TransactionInstruction, LAMPORTS_PER_SOL,
 } from "https://esm.sh/@solana/web3.js@1.95.3";
 import {
-  getAssociatedTokenAddress, TOKEN_PROGRAM_ID, createAssociatedTokenAccountInstruction,
+  getAssociatedTokenAddress, TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID, createAssociatedTokenAccountInstruction,
 } from "https://esm.sh/@solana/spl-token@0.4.9?deps=@solana/web3.js@1.95.3";
 import { sha256 } from "https://esm.sh/@noble/hashes@1.4.0/sha256";
 
@@ -210,6 +210,7 @@ function decode(buf) {
 }
 
 let wallet = null, S = null, pot = 0, myTok = 0n, dec = 6, supply = 0n, mintAuth = null;
+let TOKPROG = TOKEN_PROGRAM_ID;   // set from the mint owner — the coin may be Token-2022
 let feed = [], lastRound = null;
 const $ = id => document.getElementById(id);
 const sa = a => a.slice(0, 4) + "…" + a.slice(-4);
@@ -266,9 +267,9 @@ async function send(ixs, label) {
 }
 
 async function take() {
-  const ata = await getAssociatedTokenAddress(S.mint, wallet);
+  const ata = await getAssociatedTokenAddress(S.mint, wallet, false, TOKPROG);
   const pre = [];
-  if (!(await conn.getAccountInfo(ata))) pre.push(createAssociatedTokenAccountInstruction(wallet, ata, wallet, S.mint));
+  if (!(await conn.getAccountInfo(ata))) pre.push(createAssociatedTokenAccountInstruction(wallet, ata, wallet, S.mint, TOKPROG));
   const max = S.costTokens * 12n / 10n;
   pre.push(new TransactionInstruction({
     programId: PROGRAM_ID,
@@ -278,7 +279,7 @@ async function take() {
       { pubkey: S.mint, isSigner: false, isWritable: true },
       { pubkey: ata, isSigner: false, isWritable: true },
       { pubkey: wallet, isSigner: true, isWritable: true },
-      { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+      { pubkey: TOKPROG, isSigner: false, isWritable: false },
     ],
     data: cat(disc("take_throne"), u64le(max)),
   }));
@@ -313,7 +314,7 @@ async function refresh() {
   } catch {}
   if (wallet) {
     try {
-      const ata = await getAssociatedTokenAddress(S.mint, wallet);
+      const ata = await getAssociatedTokenAddress(S.mint, wallet, false, TOKPROG);
       const b = await conn.getTokenAccountBalance(ata);
       myTok = BigInt(b.value.amount);
     } catch { myTok = 0n; }
