@@ -270,7 +270,7 @@ async function take() {
   const ata = await getAssociatedTokenAddress(S.mint, wallet, false, TOKPROG);
   const pre = [];
   if (!(await conn.getAccountInfo(ata))) pre.push(createAssociatedTokenAccountInstruction(wallet, ata, wallet, S.mint, TOKPROG));
-  const max = S.costTokens * 12n / 10n;
+  const max = cost * 12n / 10n;
   pre.push(new TransactionInstruction({
     programId: PROGRAM_ID,
     keys: [
@@ -344,6 +344,9 @@ function render() {
   const empty = S.holder.equals(PublicKey.default);
   const isMine = wallet && !empty && S.holder.equals(wallet);
   const immune = now < S.lockedUntil;
+  // the program charges max(stored cost, floorBps of CURRENT supply) - mirror it
+  const dynFloor = supply > 0n ? (supply * BigInt(S.floorBps)) / 10000n : 0n;
+  const cost = S.costTokens > dynFloor ? S.costTokens : dynFloor;
   const hot = !over && left < 60;
 
   $("throne").className = "throne" + (isMine ? " mine" : "") + (hot || over ? " hot" : "");
@@ -377,11 +380,11 @@ function render() {
     d.textContent = immune ? `You hold it. Immune for ${Math.ceil(S.lockedUntil - now)}s.` : "You hold it. Sit tight.";
     acts.appendChild(d);
   } else {
-    const can = wallet && myTok >= S.costTokens && !immune;
+    const can = wallet && myTok >= cost && !immune;
     btn("gold", !wallet ? "Connect a wallet"
       : immune ? `Immune for ${Math.ceil(S.lockedUntil - now)}s`
-      : myTok < S.costTokens ? `Need ${tk(S.costTokens)} tokens`
-      : `Take it — burn ${tk(S.costTokens)}`, take, !can);
+      : myTok < cost ? `Need ${tk(cost)} tokens`
+      : `Take it — burn ${tk(cost)}`, take, !can);
     if (true) {
       const a = document.createElement("a");
       a.href = CFG.buyUrl || ("https://jup.ag/swap/SOL-" + S.mint.toBase58()); a.target = "_blank"; a.rel = "noopener";
@@ -412,7 +415,7 @@ function render() {
   }
 
   $("stats").innerHTML = `
-    <div class="st"><span>Costs to take</span><b>${tk(S.costTokens)} tokens</b></div>
+    <div class="st"><span>Costs to take</span><b>${tk(cost)} tokens</b></div>
     <div class="st"><span>Next take costs</span><b>+${((S.stepBps - 10000) / 100).toFixed(0)}%</b></div>
     <div class="st"><span>Each take adds</span><b>${S.addSeconds}s</b></div>
     <div class="st"><span>Immunity</span><b>${S.lockSeconds}s</b></div>
