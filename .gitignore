@@ -16,6 +16,7 @@ keypair.json
 # your own deployment addresses — fine to publish, but publish deliberately
 launch.json
 app/config.json
+!docs/config.json
 
 .DS_Store
 *.log
