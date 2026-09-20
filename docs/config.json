@@ -1,6 +1,6 @@
 {
   "rpc": "https://mainnet.helius-rpc.com/?api-key=14fe4366-ff04-452d-a864-040a0b82d050",
   "cluster": "mainnet",
-  "programId": "oDDawv2GGcWhMCVjsxfBppYZUTp8XF1nGcqNUSFuFWL",
-  "mint": "Cu7PTvqrWxbDvRud9Fj2tAUESDg6WDyAGFW36Cpjpump"
+  "programId": "75ohsrgBstDtRsxWUxNTwmD7pbeatRfK2ZZQ5AUVs8FH",
+  "mint": ""
 }

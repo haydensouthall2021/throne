@@ -1,8 +1,8 @@
-# KingCat
+# THRONE
 
 **Take the crown. Hold it to zero. Take the pot.**
 
-One seat. A clock counting down. Burn $KINGCAT to take the seat off whoever is
+One seat. A clock counting down. Burn $THRONE to take the seat off whoever is
 sitting there. Still holding when the clock reaches zero, the pot is yours.
 
 The pot is fed by trading fees on the token and sits at an address that has no
@@ -15,7 +15,7 @@ private key in existence — not the developer's, not anyone's.
 
 ## The rules, in full
 
-1. **Claiming burns $KINGCAT.** Tokens are destroyed against the mint with a real
+1. **Claiming burns $THRONE.** Tokens are destroyed against the mint with a real
    `burn` instruction. Not sent to a dead wallet, not moved to a treasury —
    removed from supply. Total supply only ever falls.
 
@@ -38,7 +38,7 @@ private key in existence — not the developer's, not anyone's.
 
 ## How to play
 
-1. **Get $KINGCAT.** Buy it wherever it trades. You need enough for one claim —
+1. **Get $THRONE.** Buy it wherever it trades. You need enough for one claim —
    at launch that is 1,000,000 tokens, which is 0.10% of supply.
 2. **Open the site** and connect a Solana wallet (Phantom, Solflare, Backpack).
 3. **Press Take it.** Your wallet asks you to sign. The transaction burns your
@@ -59,7 +59,7 @@ Say the pot is at **4.0 SOL** and supply is still a billion.
 
 | | |
 |---|---|
-| A claim costs | 1,000,000 $KINGCAT (0.10% of supply) |
+| A claim costs | 1,000,000 $THRONE (0.10% of supply) |
 | You claim | those tokens are burned, supply → 999,000,000 |
 | Clock | resets to 5:00, then drops to 4:58 |
 | Next person pays | 1,050,000 (5% more) |
@@ -130,7 +130,7 @@ price.
   payout, and that the platform authority has no route to any pot
 - The pot address is published at launch. Check its balance on any explorer
 
-The program is **multi-tenant** — $KINGCAT is the first game on it, and any token
+The program is **multi-tenant** — $THRONE is the first game on it, and any token
 can attach one. That is why the code lives in a separate repository.
 
 ---

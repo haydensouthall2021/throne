@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KingCat — take the crown, hold it, take the pot</title>
-<meta name="description" content="One seat. A clock. Burn $KINGCAT to take it. Whoever's holding when time runs out takes the pot — held at an address nobody has a key to.">
-<meta property="og:title" content="KingCat — take the crown">
+<title>THRONE — take the crown, hold it, take the pot</title>
+<meta name="description" content="One seat. A clock. Burn $THRONE to take it. Whoever's holding when time runs out takes the pot — held at an address nobody has a key to.">
+<meta property="og:title" content="THRONE — take the crown">
 <meta property="og:description" content="One seat. A clock. Burn to take it. Last one holding takes the pot.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -121,11 +121,11 @@ footer a{color:var(--gold)}
 <body>
 
 <nav><div class="nav">
-  <a href="#" class="brand"><span class="crown"></span>KingCat</a>
+  <a href="#" class="brand"><span class="crown"></span>THRONE</a>
   <span class="sp"></span>
   <a href="#play" class="l">Play</a>
   <a href="#rules" class="l">Rules</a>
-  <a href="https://github.com/haydensouthall2021/king" class="l">Code</a>
+  <a href="https://github.com/haydensouthall2021/throne" class="l">Code</a>
   <span class="ca" id="ca" title="click to copy">CA: coming at launch</span>
   <button class="btn" id="wallet" style="padding:7px 14px;font-size:12.5px">Connect wallet</button>
 </div></nav>
@@ -134,10 +134,10 @@ footer a{color:var(--gold)}
 
 <header>
   <h1>Take the crown.<em>Hold it to zero.</em></h1>
-  <p class="lede">One seat. A clock counting down. <b>Burn $KINGCAT to take it off whoever's sitting there.</b> Still holding when the clock hits zero? The pot is yours.</p>
+  <p class="lede">One seat. A clock counting down. <b>Burn $THRONE to take it off whoever's sitting there.</b> Still holding when the clock hits zero? The pot is yours.</p>
   <div class="row">
     <a href="#play" class="btn p">Play it now →</a>
-    <a href="https://github.com/haydensouthall2021/king" class="btn">Read the code</a>
+    <a href="https://github.com/haydensouthall2021/throne" class="btn">Read the code</a>
   </div>
 </header>
 
@@ -169,7 +169,7 @@ footer a{color:var(--gold)}
   <h2>Four lines. <em>That's the whole game.</em></h2>
   <div class="rules">
     <div class="rl"><span class="n">01</span><b>Burn to take it</b>
-      <p>Claiming the throne destroys $KINGCAT against the mint. Not moved to a wallet — gone. Supply only falls.</p></div>
+      <p>Claiming the throne destroys $THRONE against the mint. Not moved to a wallet — gone. Supply only falls.</p></div>
     <div class="rl"><span class="n">02</span><b>Every claim resets the clock</b>
       <p>And shortens it. Five minutes at the start, two seconds off each time, floor at thirty. Busy rounds get frantic.</p></div>
     <div class="rl"><span class="n">03</span><b>Each claim costs more</b>
@@ -198,7 +198,7 @@ footer a{color:var(--gold)}
     <h3>Where this actually is</h3>
     <p>Anchor program, <b class="ok">21 tests passing</b> — including that the platform authority has no route to any pot, that pausing cannot trap a payout, and that games cannot reach into each other's funds.</p>
     <p><b class="no">Not audited.</b> Code is public and unchanged from what's deployed. Stated here rather than buried in a footer.</p>
-    <p>$KINGCAT is the first game. The program behind it is multi-tenant — any token can attach one.</p>
+    <p>$THRONE is the first game. The program behind it is multi-tenant — any token can attach one.</p>
   </div>
 </section>
 
@@ -367,7 +367,7 @@ if (CFG && CFG.mint) {
     } else { st.style.display="none"; b.style.display="";
       b.disabled=mine||!wallet||myTok<price;
       b.textContent=mine?"You hold the crown":!wallet?"Connect a wallet"
-        :myTok<price?"Need "+tk(price)+" $KINGCAT":"Take it \u2014 burn "+tk(price);
+        :myTok<price?"Need "+tk(price)+" $THRONE":"Take it \u2014 burn "+tk(price);
       b.onclick=take;
     }
     $("f-round").textContent=S.round;
